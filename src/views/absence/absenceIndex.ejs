@@ -1,0 +1,195 @@
+
+<%- include('../partials/header.ejs') %>
+<div class="body-layout">
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-md-3 col-sm-12">
+                <div class="row absence-box-index">
+                    <div class="col-12 absence-days">
+                        <div class="d-flex flex-column align-items-center text-center py-3 px-1">
+                            <div class="progress mx-auto" data-value="<%= (userInfo['so_absence_max'] - dayUsed) / userInfo['so_absence_max'] * 100; %>">
+                                <span class="progress-left">
+                                                <span class="progress-bar border-primary"></span>
+                                </span>
+                                <span class="progress-right">
+                                                <span class="progress-bar border-primary"></span>
+                                </span>
+                                <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                    <div class="total-day"><%= (userInfo['so_absence_max'] - dayUsed) %><sup class="small"><i></i></sup></div>
+                                </div>
+                            </div>
+                            <div class="document-block">
+                                <div class="date-bank">
+                                    <span></span>
+                                    <span>Số ngày nghỉ cho phép: <span class="text-value"><%= (userInfo['so_absence_max']) %> ngày</span></span>
+                                </div>
+                                <div class="date-used">
+                                    <span></span>
+                                    <span>Số ngày nghỉ đã dùng: <span class="text-value"><%= dayUsed %> ngày</span></span>
+                                </div>
+                                <div class="date-remaining">
+                                    <span></span>
+                                    <span>Số ngày nghỉ còn lại: <span class="text-value"><%= (userInfo['so_absence_max'] - dayUsed) %> ngày</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                            
+                    <!-- Absence create Modal -->
+                    <div class="absence-create-modal modal fade" id="absenceCreateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Đơn xin nghỉ phép</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="absence-create-form" id="form_create_absence">
+                                        <div class="alert alert-danger" id="message_create_absence"></div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="absence-start-day-input">Ngày bắt đầu</label>
+                                                <input type="date" class="form-control" id="ngay_bat_dau">
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="absence-end-day-input">Ngày kết thúc</label>
+                                                <input type="date" class="form-control" id="ngay_ket_thuc">
+                                            </div>
+                                        </div>
+                                        <!-- Task attachments -->
+                                        <div class="task-detail-section">
+                                            <i class="far fa-file-alt"></i>
+                                            <h3>File đính kèm</h3>
+                                            <div class="input-group mb-3">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input absence-file" name="absence_file" id="absence_file">
+                                                    <label class="custom-file-label" for="absence-absence_file">Choose file</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="absence-reason-input">Lý do</label>
+                                            <textarea rows="4" type="text" class="form-control" id="ly_do"></textarea>
+                                        </div>
+                                        <div class="form-footer">
+                                            <button type="reset" class="btn btn-outline-primary">Clear</button>
+                                            <button type="submit" class="btn btn-success">Nộp đơn</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+            <div class="col-md-9 col-sm-12 absence-history-wrapper">
+                <div class="row absence-history">
+                    <div class="col my-3">                            
+                        <div class="row justify-content-between">
+                            <h2 class="absence-heading">Lịch sử nghỉ phép</h2>
+                            <div class="btn_contain" data-toggle="modal" data-target="#absenceCreateModal">
+                                <label>Tạo đơn xin nghỉ phép</label>
+                                <i class="fas fa-plus-circle add_btn"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="absence-list table table-hover table-striped text-center">
+                            <% if (status) { %>
+                                <% if (status == 'created') { %> 
+                                    <div class="alert alert-info"> Tạo đơn xin nghỉ phép thành công </div>
+                                <% } %>
+                            <% } %>
+                            <thead class="table-header">
+                                <tr>
+                                    <th scope="col">Mã đơn</th>
+                                    <th scope="col">Ngày bắt đầu</th>
+                                    <th scope="col">Ngày kết thúc</th>
+                                    <th scope="col">State</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (absenceCurrent.length > 0) { %>
+                                    <% for (var i = 0; i < absenceCurrent.length; i++) {%>
+                                        <tr class="absence-item">
+                                            <th scope="row"><%= absenceCurrent[i]['absence_id'] %></th>
+                                            <td><%= moment(absenceCurrent[i]['ngay_bat_dau']).format("DD/MM/YYYY") %></td>
+                                            <td><%= moment(absenceCurrent[i]['ngay_ket_thuc']).format("DD/MM/YYYY") %></td>
+                                
+                                                <% if(absenceCurrent[i]['status'] == 0){ %>
+                                                    <td class="absence-state absence-waiting">Chờ duyệt</td>
+                                                <% } %>
+                                                <% if(absenceCurrent[i]['status'] == -1){ %>
+                                                    <td class="absence-state absence-refused">Bị từ chối</td>
+                                                <% } %>
+                                                <% if(absenceCurrent[i]['status'] == 1){ %>
+                                                    <td class="absence-state absence-approved">Đã duyệt</td>
+                                                <% } %>
+                                            <td>
+                                                <button type="button" class="btn btn-primary absence-view-detail-btn" data-toggle="modal" data-target="#absenceDetailModal"
+                                                    asignee="<%= absenceCurrent[i]['ho_ten'] %>"
+                                                    start="<%= moment(absenceCurrent[i]['ngay_bat_dau']).format('DD/MM/YYYY') %>"
+                                                    end="<%= moment(absenceCurrent[i]['ngay_ket_thuc']).format('DD/MM/YYYY') %>"
+                                                    reason="<%= absenceCurrent[i]['ly_do'] %>"
+                                                    file="<%= absenceCurrent[i]['tap_tin'] %>"
+                                                    id="absence_view_detail_btn"
+                                                >Xem chi tiết</button>
+                                            </td>
+                                        </tr>
+                                <% }} else { %>
+                                    <tr><td colspan=5 class="table-alert py-5"><div><i class="fas fa-exclamation"></i></div>Hiện tại bạn không có đơn xin nghỉ phép nào </td></tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Modal -->
+                    <div class="absence-detail-modal modal fade" id="absenceDetailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Đơn xin nghỉ phép</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="absence-detail">
+                                        <div class="row">
+                                            <label class="col-6 col-sm-4 font-weight-bold" for="absence-creator">Người xin nghỉ: </label>
+                                            <div class="absenceCreator text-success font-weight-bold col-6 col-sm-8" id="absence-creator">
+                                            </div>
+                                            <label class="col-6 col-sm-4 font-weight-bold" for="absence-start-day">Ngày bắt đầu: </label>
+                                            <div class="absence-start-day col-6 col-sm-8" id="absence-start-day">
+                                            </div>
+                                            <label class="col-6 col-sm-4 font-weight-bold" for="absence-end-day">Ngày kết thúc: </label>
+                                            <div class="absence-end-day col-6 col-sm-8" id="absence-end-day">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label class="col-12 font-weight-bold" for="absence-reason">Lý do: </label>
+                                            <p class="absence-reason col-12" id="absence-reason"></p>
+                                        </div>
+                                        <!-- File attachments -->
+                                        <div class="task-detail-section">
+                                            <i class="far fa-file-alt"></i>
+                                            <h3>File đính kèm</h3>
+                                            <div class="input-group mb-3">
+                                                <div class="custom-file">
+                                                    <a href="#" id="absence-detail-file" download></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

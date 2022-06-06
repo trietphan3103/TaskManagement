@@ -1,0 +1,140 @@
+<%- include('../partials/header.ejs') %>
+<div class="body-layout">
+    <div class="container mb-5">
+        <div class="row user-management">
+            <div class="col">
+                <div class="row justify-content-between mb-3">
+                    <h2 class="user-management-heading">Quản lý nhân viên</h2>
+                    <div class="user-create">
+                        <div class="btn_contain" href="#" data-toggle="modal" data-target="#userCreateModal">
+                            <label>Thêm nhân viên mới</label>
+                            <i class="fas fa-plus-circle add_btn"></i>
+                        </div>
+                        <!--user Create Modal -->
+                        <div class="user-create-modal modal fade" id="userCreateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLongTitle"><b>Thêm nhân viên</b></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="user-create-form" id="user_create_form">
+                                            <div class="alert alert-danger" id="message_create_user"></div>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="user-name-input">Tên nhân viên</label>
+                                                    <input type="text" class="form-control" id="ho_ten" placeholder="Nhập tên nhân viên" name="ho_ten">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="user-username-input">Username</label>
+                                                    <input type="text" class="form-control" id="user_name" placeholder="Nhập username nhân viên" name="user_name">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="user-birthday-input">Ngày sinh</label>
+                                                    <input type="date" class="form-control" id="ngay_sinh" name="ngay_sinh">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="user-gender-input">Giới tính</label>
+                                                    <select class="custom-select" id="gioi_tinh" name="gioi_tinh">
+                                                        <option value="Male" selected>Nam</option>
+                                                        <option value="Female">Nữ</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="user-gender-input">Phòng ban</label>
+                                                    <select class="custom-select" id="phong_ban_id" name="phong_ban_id">
+                                                        <% if (departments.length > 0) { %>
+                                                            <% for (var i = 0; i < departments.length; i++) {%>
+                                                                <option value ='<%= departments[i].phong_ban_id %>'><%= departments[i].ten_phong %></option>
+                                                        <% }} else { %>
+                                                            
+                                                        <% } %>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="user-gender-input">Chức vụ</label>
+                                                    <select class="custom-select" id="status" name="status">
+                                                        <option value="0">Nhân viên</option>
+                                                        <option value="1">Trưởng phòng</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="user-number-input">Số điện thoại</label>
+                                                    <input type="text" class="form-control" id="sdt" name="sdt">
+                                                </div>
+                                            </div>
+                                            <div class="form-footer mt-2">
+                                                <button type="reset" class="btn btn-outline-primary">Clear</button>
+                                                <button type="submit" class="btn btn-success">Lưu</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-wrapper table-no-scroll">
+                <% if (status) { %>
+                    <% if (status == 'created') { %> 
+                        <div class="alert alert-info"> Tạo mới tài khoản nhân viên thành công </div>
+                    <% } %>
+                    <% if (status == 'deleted') { %> 
+                        <div class="alert alert-info"> Xóa nhân viên thành công </div>
+                    <% } %>
+                <% } %>
+                <table class="user-list table table-hover table-striped">
+                    <thead class="table-header">
+                        <tr>
+                            <th scope="col" class="align-middle employee-id">Username</th>
+                            <th scope="col" class="align-middle employee-name">Họ và tên</th>
+                            <th scope="col" class="align-middle employee-department">Phòng ban</th>
+                            <th scope="col" class="align-middle employee-department">Chức vụ</th>
+                            <th scope="col" class="align-middle">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (users.length > 0) { %>
+                            <% for (var i = 0; i < users.length; i++) {%>
+                                <tr class="user-item" id="user_<%= users[i]['user_id'] %>">                                 
+                                    <td> <a href="/users/detail?user_id=<%= users[i]['user_id'] %>"> <b><%= users[i]['user_name'] %></b></a></td>
+                                    <td class="font-weight-bold"><%= users[i]['ho_ten'] %></td>   
+                                    <td><%= users[i]['ten_phong'] %></td>
+                                    <td><%= users[i]['status'] == 0 ? "Nhân viên" : "Trưởng phòng" %></td>
+                                    <td class="user-action">
+                                        <button type="button" class="btn user-delete-btn" data-toggle="modal" data-target="#userDeleteModal" onClick="_setSelectedUser('<%= users[i].user_name %>')">Xóa</button>
+                                    </td>
+                                </tr>
+                        <% }} else { %>
+                            <tr> <td colspan=5>Chưa có user nào</td> </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <!-- user-delete-modal -->
+            <div class="modal fade" id="userDeleteModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Xác nhận vô hiệu hóa nhân viên</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Bạn có chắc là muốn xóa <b>username</b> chứ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-danger" onclick="_deleteUser()">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

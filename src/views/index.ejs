@@ -1,0 +1,101 @@
+<%- include('./partials/header.ejs') %>
+    <% if (!isDirector) { %>
+    <div id="absence-index" class="row absence-box-index">
+        <div class="absence-days flex-column col-12 col-md-8 col-lg-4">
+            <div class="d-flex flex-column align-items-center text-center p-3">
+                <div class="progress mx-auto" data-value="<%= (userInfo['so_absence_max'] - dayUsed) / userInfo['so_absence_max'] * 100; %>">
+                    <span class="progress-left">
+                        <span class="progress-bar border-primary"></span>
+                    </span>
+                    <span class="progress-right">
+                        <span class="progress-bar border-primary"></span>
+                    </span>
+                    <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                        <div class="total-day"><%= (userInfo['so_absence_max'] - dayUsed) %><sup class="small"><i></i></sup></div>
+                    </div>
+                </div>
+                <div class="document-block">
+                    <div class="date-bank">
+                        <span></span>
+                        <span>Số ngày nghỉ cho phép: <span class="text-value"><%= (userInfo['so_absence_max']) %> ngày</span></span>
+                    </div>
+                    <div class="date-used">
+                        <span></span>
+                        <span>Số ngày nghỉ đã dùng: <span class="text-value"><%= dayUsed %> ngày</span></span>
+                    </div>
+                    <div class="date-remaining">
+                        <span></span>
+                        <span>Số ngày nghỉ còn lại: <span class="text-value"><%= (userInfo['so_absence_max'] - dayUsed) %> ngày</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex-column col-12 col-md-12 col-lg-8" id="upcoming-absence-tbl">
+            <div class="row rounded bg-white absence-index-wrapper">
+                <h3 class="title">Ngày nghỉ sắp tới</h3>
+                <div class="table-wrapper">
+                    <table class="absence-list table table-hover table-striped">
+                        <thead class="table-header">
+                            <tr>
+                                <th scope="col">Ngày bắt đầu</th>
+                                <th scope="col">Ngày kết thúc</th>
+                                <th scope="col">Lý do</th>
+                                <th scope="col" class="text-center">Số ngày nghỉ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (absenceFuture.length > 0) { %>
+                                <% for (var i = 0; i < absenceFuture.length; i++) {%>
+                                    <tr>
+                                        <td><%= moment(absenceFuture[i]['ngay_bat_dau']).format("DD/MM/YYYY") %></td>
+                                        <td><%= moment(absenceFuture[i]['ngay_ket_thuc']).format("DD/MM/YYYY") %></td>
+                                        <td><%= absenceFuture[i]['ly_do'] %></td>
+                                        <td class="text-center"><%= absenceFuture[i]['so_ngay_nghi'] %></td>
+                                    </tr>
+                            <% }} else { %>
+                                <tr><td colspan="5" rowspan="2" class="text-center py-5 table-alert"><div><i class="fas fa-exclamation"></i></div>Bạn không có đơn nghỉ phép nào được duyệt trong tương lai</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <div id="absence-index-list" class="row">
+        <div class="flex-column col-12">
+            <div class="row rounded bg-white absence-index-wrapper">
+                <div class="col-12 p-0">
+                    <h3 class="title">Thành viên vắng hôm nay</h3>
+                </div>
+                <% if (absenceToday.length > 0) { %>
+                    <% for (var i = 0; i < absenceToday.length; i++) { %>
+                        <div class="absence-index-card rounded col-md-3 col-sm-6">
+                            <div class="d-flex flex-column align-items-center p-3">
+                                <img class="rounded-circle" src="<% (!absenceToday[i].anh_dai_dien) ? absenceToday[i].anh_dai_dien : '/images/user_avt/default_avt.jpg'%>" width="90">
+                            </div>
+                            <div class="absence-card-label">
+                                <div>
+                                    <strong>Tên: </strong>
+                                    <span class="absence-card-name"><%= absenceToday[i].ho_ten %></span>
+                                </div>
+                                <div>
+                                    <strong>Phòng: </strong>
+                                    <span><%= absenceToday[i].ten_phong %></span>
+                                </div>
+                                <div>
+                                    <strong>Ngày quay lại: </strong>
+                                    <span><%= moment(absenceToday[i]['ngay_quay_lai']).format("DD/MM/YYYY") %></span>
+                                </div>
+                            </div>
+                        </div>
+                <% }} else { %>
+                    <div class="col-12 align-items-center text-center none-absence">
+                        <img src="/images/absence-list.png" alt="no-one-absence" width="90">
+                        <div>Hurray! Không nhân viên nào vắng mặt hôm nay!</div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,1013 @@
+<%- include('../partials/header.ejs') %>
+<div class="body-layout">
+    <div class="container-fluid task-manager-container">
+        <!-- New task column -->
+        <div class="content-column new-column">
+            <div class="content">
+                <div class="content-head-ng">
+                    <div class="content content-head"> New</div>
+                </div>
+                <% if (listTaskStatus1) { %>
+                    <% for (var i = 0; i < listTaskStatus1.length; i++) {%>
+                        <div class="content-card new-task">
+                            <div class="content-card-body">                            
+                                <div class="col-12">
+                                    <div class="task-id"><a href="#"><%= listTaskStatus1[i]['ten_task'] %></a></div>
+                                    <div class="department">
+                                        <%= listTaskStatus1[i]['ten_phong'] %>
+                                    </div>
+                                    <div class="descrip"><%= listTaskStatus1[i]['task_mo_ta'] %></div>        
+                                </div>
+                            </div>
+                            <div class="content-card-footer">
+                                <div class="footer-card-section">
+                                    <div class="detail-btn">
+                                        <button class="btn" type="button" data-toggle="modal" data-target="#new-task-modal" value="<%= listTaskStatus1[i]['task_new_id'] %>">Xem chi tiết</button>
+                                    </div>
+                                    <% if (userInfo.user_id == listTaskStatus1[i]['nguoi_thuc_hien_id'] ) { %>
+                                        <div class="start-task">
+                                            <button class="btn" type="button" value="<%= listTaskStatus1[i]['task_new_id'] %>">Bắt đầu</button>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="footer-card-section footer-card-line">
+                                    <div class="time-left">
+                                        <i>
+                                            <% if (listTaskStatus1[i]['days'] >= 0 && listTaskStatus1[i]['hours'] >= 0 && listTaskStatus1[i]['minutes']) { %>
+                                                <%= listTaskStatus1[i]['days'] %>d <%= listTaskStatus1[i]['hours'] %>h <%= listTaskStatus1[i]['minutes']%>m <span class="font-weight-normal text-black-50"> left</span>
+                                            <% } else { %>
+                                                <span style='color:red'>Quá hạn</span>
+                                            <% } %>
+                                        </i>
+                                    </div>
+                                    <a href="#" class="img-task-assignee">
+                                        <img class="rounded-circle" src="<%= listTaskStatus1[i]['anh_dai_dien'] ? 
+                                        listTaskStatus1[i]['anh_dai_dien'] : 
+                                        '/images/user_avt/default_avt.jpg' %>" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                <% }} else { %>
+                    
+                <% } %>
+            </div>
+        </div>
+
+        <!-- In Progress task column -->
+        <div class="content-column in-progress-column">
+            <div class="content">
+                <div class="content-head-ng">
+                    <div class="content content-head">In Progress</div>
+                </div>
+                <% if (listTaskStatus2) { %>
+                    <% for (var i = 0; i < listTaskStatus2.length; i++) {%>
+                        <div class="content-card ">
+                            <div class="content-card-body">
+                                <div class="col-12">
+                                    <div class="task-id"><a href="#"><%= listTaskStatus2[i]['ten_task'] %></a></div>
+                                    <div class="department">
+                                        <%= listTaskStatus2[i]['ten_phong'] %>
+                                    </div>
+                                    <div class="descrip"><%= listTaskStatus2[i]['task_mo_ta'] %></div>    
+                                </div>
+                            </div>
+                            <div class="content-card-footer">
+                                <div class="footer-card-section">
+                                    <div class="detail-btn inprogress-task-manage-js">
+                                        <button class="btn" type="button" data-toggle="modal" data-target="#progress-task-modal" value="<%= listTaskStatus2[i]['task_new_id'] %>" onclick='updateRejectedHistory("<%= listTaskStatus2[i].task_new_id %>")'>Xem chi tiết</button>
+                                    </div>
+                                    <% if (userInfo.user_id == listTaskStatus2[i]['nguoi_thuc_hien_id'] ) { %>
+                                        <div class="submit-task">
+                                            <button class="btn" type="button" data-toggle="modal" data-target="#submit-task-main-modal" value="<%= listTaskStatus2[i]['task_new_id'] %>">Nộp</button>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="footer-card-section footer-card-line">
+                                    <div class="time-left">
+                                        <i>
+                                            <% if (listTaskStatus2[i]['days'] >= 0 && listTaskStatus2[i]['hours'] >= 0 && listTaskStatus2[i]['minutes']) { %>
+                                                <%= listTaskStatus2[i]['days'] %>d <%= listTaskStatus2[i]['hours'] %>h <%= listTaskStatus2[i]['minutes']%>m <span class="font-weight-normal text-black-50"> left</span>
+                                            <% } else { %>
+                                                <span style='color:red'>Quá hạn</span>
+                                            <% } %>
+                                        </i>
+                                    </div>
+                                    <a href="#" class="img-task-assignee">
+                                        <img class="rounded-circle" 
+                                        src="<%= listTaskStatus2[i]['anh_dai_dien'] ? 
+                                        listTaskStatus2[i]['anh_dai_dien'] : 
+                                        '/images/user_avt/default_avt.jpg' %>" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                <% }} else { %>
+                    
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Canceled task column -->
+        <div class="content-column canceled-column">
+            <div class="content">
+                <div class="content-head-ng">
+                    <div class="content content-head">Canceled</div>
+                </div>
+                <% if (listTaskStatus3) { %>
+                    <% for (var i = 0; i < listTaskStatus3.length; i++) {%>
+                        <div class="content-card">
+                            <div class="content-card-body">
+                                <div class="col-12">
+                                    <div class="task-id"><a href="#"><%= listTaskStatus3[i]['ten_task'] %></a></div>
+                                    <div class="department">
+                                        <%= listTaskStatus3[i]['ten_phong'] %>
+                                    </div>
+                                    <div class="descrip"><%= listTaskStatus3[i]['task_mo_ta'] %></div>
+                                </div>
+                            </div>
+                            <div class="content-card-footer">
+                                <div class="footer-card-section">
+                                    <div class="detail-btn">
+                                        <button class="btn" type="button" data-toggle="modal" data-target="#canceled-task-modal" value="<%= listTaskStatus3[i]['task_new_id'] %>">Xem chi tiết</button>
+                                    </div>
+                                    <a href="#" class="img-task-assignee">
+                                        <img class="rounded-circle" 
+                                        src="<%= listTaskStatus3[i]['anh_dai_dien'] ? 
+                                        listTaskStatus3[i]['anh_dai_dien'] : 
+                                        '/images/user_avt/default_avt.jpg' %>" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                <% }} else { %>
+                    
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Waiting task column -->
+        <div class="content-column waiting-column">
+            <div class="content">
+                <div class="content-head-ng">
+                    <div class="content content-head">Waiting</div>
+                </div>
+                <% if (listTaskStatus4) { %>
+                    <% for (var i = 0; i < listTaskStatus4.length; i++) {%>
+                        <div class="content-card">
+                            <div class="content-card-body">
+                                <div class="col-12">
+                                    <div class="task-id"><a href="#"><%= listTaskStatus4[i]['ten_task'] %></a></div>
+                                    <div class="department">
+                                        <%= listTaskStatus4[i]['ten_phong'] %>
+                                    </div>
+                                    <div class="descrip"><%= listTaskStatus4[i]['task_mo_ta'] %></div>
+                                </div>
+                            </div>
+                            <div class="content-card-footer">
+                                <div class="footer-card-section">
+                                    <div class="detail-btn canceled-task-manage-js">
+                                        <button class="btn" type="button" data-toggle="modal" data-target="#waiting-task-modal" value="<%= listTaskStatus4[i]['task_new_id'] %>" onclick="updateRejectedHistory(<%= listTaskStatus4[i]['task_new_id'] %>)">Xem chi tiết</button>
+                                    </div>
+                                </div>
+                                <div class="footer-card-section footer-card-line">
+                                    <div class="time-left">
+                                        <i>
+                                            <% if (listTaskStatus4[i]['days'] >= 0 && listTaskStatus4[i]['hours'] >= 0 && listTaskStatus4[i]['minutes']) { %>
+                                                <%= listTaskStatus4[i]['days'] %>d <%= listTaskStatus4[i]['hours'] %>h <%= listTaskStatus4[i]['minutes']%>m <span class="font-weight-normal text-black-50"> left</span>
+                                            <% } else { %>
+                                                <span style='color:red'>Quá hạn</span>
+                                            <% } %>
+                                        </i>
+                                    </div>
+                                    <a href="#" class="img-task-assignee">
+                                        <img class="rounded-circle" 
+                                        src="<%= listTaskStatus4[i]['anh_dai_dien'] ? 
+                                        listTaskStatus4[i]['anh_dai_dien'] : 
+                                        '/images/user_avt/default_avt.jpg' %>" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                <% }} else { %>
+                    
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Rejected task column -->
+        <div class="content-column rejected-column">
+            <div class="content">
+                <div class="content-head-ng">
+                    <div class="content content-head">Rejected</div>
+                </div>
+                <% if (listTaskStatus5) { %>
+                    <% for (var i = 0; i < listTaskStatus5.length; i++) {%>
+                        <div class="content-card">
+                            <div class="content-card-body">
+                                <div class="col-12">
+                                    <div class="task-id"><a href="#"><%= listTaskStatus5[i]['ten_task'] %></a></div>
+                                    <div class="department">
+                                        <%= listTaskStatus5[i]['ten_phong'] %>
+                                    </div>
+                                    <div class="descrip"><%= listTaskStatus5[i]['task_mo_ta'] %></div>
+                                </div>
+                            </div>
+                            <div class="content-card-footer">
+                                <div class="footer-card-section">
+                                    <div class="detail-btn canceled-task-manage-js">
+                                        <button class="btn" type="button" data-toggle="modal" data-target="#rejected-task-index-modal" value="<%= listTaskStatus5[i]['task_new_id'] %>" onclick="updateRejectedHistory(<%= listTaskStatus5[i]['task_new_id'] %>)">Xem chi tiết</button>
+                                    </div>
+                                    <% if (userInfo.user_id == listTaskStatus5[i]['nguoi_thuc_hien_id'] ) { %>
+                                        <div class="submit-task">
+                                            <button class="btn asign-again-btn" type="button" data-toggle="modal" value="<%= listTaskStatus5[i]['task_new_id'] %>" id="asign-again-btn">Nhận lại</button>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="footer-card-section footer-card-line">
+                                    <div class="time-left">
+                                        <i>
+                                            <% if (listTaskStatus5[i]['days'] >= 0 && listTaskStatus5[i]['hours'] >= 0 && listTaskStatus5[i]['minutes']) { %>
+                                                <%= listTaskStatus5[i]['days'] %>d <%= listTaskStatus5[i]['hours'] %>h <%= listTaskStatus5[i]['minutes']%>m <span class="font-weight-normal text-black-50"> left</span>
+                                            <% } else { %>
+                                                <span style='color:red'>Quá hạn</span>
+                                            <% } %>
+                                        </i>
+                                    </div>
+                                    <a href="#" class="img-task-assignee">
+                                        <img class="rounded-circle" 
+                                        src="<%= listTaskStatus5[i]['anh_dai_dien'] ? 
+                                        listTaskStatus5[i]['anh_dai_dien'] : 
+                                        '/images/user_avt/default_avt.jpg' %>" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                <% }} else { %>
+                    
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Completed task column -->
+        <div class="content-column completed-column">
+            <div class="content">
+                <div class="content-head-ng">
+                    <div class="content content-head">Completed</div>
+                </div>
+                <% if (listTaskStatus6) { %>
+                    <% for (var i = 0; i < listTaskStatus6.length; i++) {%>
+                        <div class="content-card">
+                            <div class="content-card-body">
+                                <div class="col-12">
+                                    <div class="task-id"><a href="#"><%= listTaskStatus6[i]['ten_task'] %></a></div>
+                                    <div class="department">
+                                        <%= listTaskStatus6[i]['ten_phong'] %>
+                                    </div>
+                                    <div class="descrip"><%= listTaskStatus6[i]['task_mo_ta'] %></div>
+                                </div>
+                            </div>
+                            <div class="content-card-footer">
+                                <div class="footer-card-section">
+                                    <div class="detail-btn canceled-task-manage-js">
+                                        <button class="btn" type="button" data-toggle="modal" data-target="#completed-task-modal" value="<%= listTaskStatus6[i]['task_new_id'] %>" onclick="updateRejectedHistory(<%= listTaskStatus6[i]['task_new_id'] %>)">Xem chi tiết</button>
+                                    </div>
+                                    <a href="#" class="img-task-assignee">
+                                        <img class="rounded-circle" src="<%= listTaskStatus6[i]['anh_dai_dien'] ? 
+                                        listTaskStatus6[i]['anh_dai_dien'] : 
+                                        '/images/user_avt/default_avt.jpg' %>" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                <% }} else { %>
+                    
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task detail modal - NEW -->
+<div class="modal fade" id="new-task-modal">
+    <div class="modal-dialog task-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <div>
+                        <label class="task-detail-phongban"></label>
+                    </div>
+                    <div>
+                        <div class="status-dot status-dot-new"></div>
+                        <div class="status-content status-content-new">New</div>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row task-detail-container">
+                    <!-- Task sidebar -->
+                    <div class="task-right">
+                        <div class="task-detail-sidebar col-xs-12 mt-3">
+                            <div class="task-detail-estimate">
+                                <div>
+                                    <i class="far fa-clock"></i>
+                                    <h3>Hạn nộp</h3>
+                                </div>
+                                <div class="task-detail-date"></div>
+                                <div class="task-detail-time"></div>
+                                <div class="task-detail-remaining">
+                                    Còn lại: 
+                                    <span class="task-time-remaining"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Task detail container -->
+                    <div class="task-detail-content col-xs-12">
+                        <!-- Nguoi thuc hien task -->
+                        <div>
+                            <div class="task-detail-section">
+                                <i class="far fa-user"></i>
+                                <h3>Người thực hiện: </h3>
+                                <div class="task-member d-inline font-weight-bold">
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Task description -->
+                        <div class="task-detail-section">
+                            <i class="fas fa-tasks"></i>
+                            <h3>Mô tả công việc</h3>
+                            <div class="task-detail-input">
+                                <textarea rows = "5" cols = "55" placeholder="Thêm mô tả cho task..." class="task-desc-input" id="task-desc-input" readonly></textarea>
+                            </div>
+                        </div>
+    
+                        <!-- Task attachments -->
+                        <div class="task-detail-section">
+                            <i class="far fa-file-alt"></i>
+                            <h3>File đính kèm</h3>
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <a href="#" download id="task-detail-file"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task detail modal - IN PROGRESS -->
+<div class="modal fade" id="progress-task-modal">
+    <div class="modal-dialog task-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <div>
+                        <label class="task-detail-phongban"></label>
+                    </div>
+                    <div>
+                        <div class="status-dot status-dot-in-progress"></div>
+                        <div class="status-content status-content-in-progress">In Progress</div>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row task-detail-container">
+                    <!-- Task sidebar -->
+                    <div class="task-right">
+                        <div class="task-detail-sidebar col-xs-12 mt-3">
+                            <div class="task-detail-estimate">
+                                <div>
+                                    <i class="far fa-clock"></i>
+                                    <h3>Hạn nộp</h3>
+                                </div>
+                                <div class="task-detail-date"></div>
+                                <div class="task-detail-time"></div>
+                                <div class="task-detail-remaining">
+                                    Còn lại: 
+                                    <span class="task-time-remaining"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-detail-sidebar col-xs-12 mt-3">
+                                <div class="task-detail-history">
+                                    <div>
+                                        <i class="fas fa-history"></i>
+                                        <h3>Lịch sử công việc</h3>
+                                    </div>
+                                    <div class="history-task-bar" id="rejected_modal_history"></div>
+                                </div>
+                        </div>
+                    </div>
+                
+                    <!-- Task detail container -->
+                    <div class="task-detail-content col-xs-12">
+                        <!-- Nguoi thuc hien task -->
+                        <div>
+                            <div class="task-detail-section">
+                                <i class="far fa-user"></i>
+                                <h3>Người thực hiện: </h3>
+                                <div class="task-member d-inline font-weight-bold">
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Task description -->
+                        <div class="task-detail-section">
+                            <i class="fas fa-tasks"></i>
+                            <h3>Mô tả công việc</h3>
+                            <div class="task-detail-input">
+                                <textarea rows = "5" cols = "55" placeholder="Thêm mô tả cho task..." class="task-desc-input" id="task-desc-input" disabled></textarea>
+                            </div>
+                        </div>
+    
+                        <!-- Task attachments -->
+                        <div class="task-detail-section">
+                            <i class="far fa-file-alt"></i>
+                            <h3>File đính kèm</h3>
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <a href="#" download id="task-detail-file"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task detail modal - CANCELED -->
+<div class="modal fade" id="canceled-task-modal">
+    <div class="modal-dialog task-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="exampleModalLabel">Task's name</h5>
+                    <div>
+                        <label class="task-detail-phongban">Phòng ban: Marketing</label>
+                    </div>
+                    <div>
+                        <div class="status-dot status-dot-canceled"></div>
+                        <div class="status-content status-content-canceled">Canceled</div>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row task-detail-container">
+                    <!-- Task sidebar -->
+                    <div class="task-right">
+                        <div class="task-detail-sidebar col-xs-12 mt-3">
+                            <div class="task-detail-estimate">
+                                <div>
+                                    <i class="far fa-clock"></i>
+                                    <h3>Hạn nộp</h3>
+                                </div>
+                                <div class="task-detail-date">14/12/2021</div>
+                                <div class="task-detail-time">15:00</div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Task detail container -->
+                    <div class="task-detail-content col-xs-12">
+                        <!-- Nguoi thuc hien task -->
+                        <div>
+                            <div class="task-detail-section">
+                                <i class="far fa-user"></i>
+                                <h3>Người thực hiện: </h3>
+                                <div class="task-member d-inline font-weight-bold">
+                                    Nguyễn Văn A
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Task description -->
+                        <div class="task-detail-section">
+                            <i class="fas fa-tasks"></i>
+                            <h3>Mô tả công việc</h3>
+                            <div class="task-detail-input">
+                                <textarea rows = "5" cols = "55" placeholder="Thêm mô tả cho task..." class="task-desc-input" id="task-desc-input" disabled></textarea>
+                            </div>
+                        </div>
+    
+                        <!-- Task attachments -->
+                        <div class="task-detail-section">
+                            <i class="far fa-file-alt"></i>
+                            <h3>File đính kèm</h3>
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <a href="#" download id="task-detail-file"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task detail modal - WAITING -->
+<div class="modal fade" id="waiting-task-modal">
+    <div class="modal-dialog task-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <div>
+                        <label class="task-detail-phongban">Phòng ban: Marketing</label>
+                    </div>
+                    <div>
+                        <div class="status-dot status-dot-waiting"></div>
+                        <div class="status-content status-content-waiting">Waiting</div>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row task-detail-container">
+                    <!-- Task sidebar -->
+                        <div class="task-right">
+                            <div class="task-detail-sidebar col-xs-12 mt-3">
+                                <div class="task-detail-estimate">
+                                    <div class="mb-3">
+                                        <i class="fas fa-calendar"></i>
+                                        <h3>Thời gian nộp</h3>
+                                        <div class="time-submit-manage"></div>
+                                    </div>
+                                    <div>
+                                        <i class="far fa-clock"></i>
+                                        <h3>Hạn nộp</h3>
+                                    </div>
+                                    <div class="task-detail-date"></div>
+                                    <div class="task-detail-time"></div>
+                                    <div class="task-detail-remaining">
+                                        Còn lại: 
+                                        <span class="task-time-remaining"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="task-detail-sidebar col-xs-12 mt-3">
+                                <div class="task-detail-history">
+                                    <div>
+                                        <i class="fas fa-history"></i>
+                                        <h3>Lịch sử công việc</h3>
+                                    </div>
+                                    <div class="history-task-bar">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- Task detail container -->
+                    <div class="task-detail-content col-xs-12">
+                        <!-- Nguoi thuc hien task -->
+                        <div>
+                            <div class="task-detail-section">
+                                <i class="far fa-user"></i>
+                                <h3>Người thực hiện: </h3>
+                                <div class="task-member d-inline font-weight-bold">
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Task description -->
+                        <div class="task-detail-section">
+                            <i class="fas fa-tasks"></i>
+                            <h3>Mô tả công việc</h3>
+                            <div class="task-detail-input">
+                                <textarea rows = "5" cols = "55" placeholder="Thêm mô tả cho task..." class="task-desc-input" id="waiting-desc-manage-input" disabled></textarea>
+                            </div>
+                        </div>
+    
+                        <!-- Task attachments -->
+                        <div class="task-detail-section task-manage-line">
+                            <i class="far fa-file-alt"></i>
+                            <h3>File đính kèm</h3>
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <a href="#" id="waiting-task-detail-file" download></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mô tả được submit cho trưởng phòng -->
+                        <div class="task-detail-section">
+                            <i class="fas fa-tasks"></i>
+                            <h3>Mô tả báo cáo của nhân viên</h3>
+                            <div class="task-detail-input">
+                                <textarea rows = "3" cols = "55" placeholder="Thêm mô tả cho task..." class="task-desc-input" id="waiting-submit-task-input" disabled></textarea>
+                            </div>
+                        </div>
+
+                        <!-- File được submit cho trưởng phòng -->
+                        <div class="task-detail-section">
+                            <i class="far fa-file-alt"></i>
+                            <h3>File nộp của nhân viên</h3>
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <a href="#" id="waiting-submit-task-file" download></a>
+                                </div>
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div type="button" class="btn btn-outline-secondary" data-dismiss="modal">Đóng</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task detail modal - REJECTED -->
+<div class="modal fade" id="rejected-task-index-modal">
+    <div class="modal-dialog task-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <div>
+                        <label class="task-detail-phongban"></label>
+                    </div>
+                    <div>
+                        <div class="status-dot status-dot-rejected"></div>
+                        <div class="status-content status-content-rejected">Rejected</div>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="new-task-detail-form">
+                <div class="modal-body">
+                    <div class="row task-detail-container">
+                        <!-- Task sidebar -->
+                        <div class="task-right">
+                            <div class="task-detail-sidebar col-xs-12 mt-3">
+                                <div class="task-detail-estimate">
+                                    <div class="mb-3">
+                                        <i class="fas fa-calendar"></i>
+                                        <h3>Thời gian nộp</h3>
+                                        <div class="rejected-time-submit-manage"></div>
+                                    </div>
+                                    <div>
+                                        <i class="far fa-clock"></i>
+                                        <h3>Hạn nộp</h3>
+                                    </div>
+                                    <div class="task-detail-date"></div>
+                                    <div class="task-detail-time"></div>
+                                    <div class="task-detail-remaining">
+                                        Còn lại: 
+                                        <span class="task-time-remaining"></span>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="task-detail-sidebar col-xs-12 mt-3">
+                                <div class="task-detail-history">
+                                    <div>
+                                        <i class="fas fa-history"></i>
+                                        <h3>Lịch sử công việc</h3>
+                                    </div>
+                                    <div class="history-task-bar">
+                                        <div class="history-section">
+                                            <h3>13:00, 15/12/2021</h3>
+                                            <div class="history-desc">Message</div>
+                                        </div>
+                                        <div class="history-section">
+                                            <h3>12:00, 14/12/2021</h3>
+                                            <div class="history-desc">Message</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Task detail container -->
+                        <div class="task-detail-content col-xs-12">
+                            <!-- Nguoi thuc hien task -->
+                            <div>
+                                <div class="task-detail-section">
+                                    <i class="far fa-user"></i>
+                                    <h3>Người thực hiện: </h3>
+                                    <div class="task-member d-inline font-weight-bold">
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <!-- Task description -->
+                            <div class="task-detail-section">
+                                <i class="fas fa-tasks"></i>
+                                <h3>Mô tả công việc</h3>
+                                <div class="task-detail-input">
+                                    <textarea rows = "5" cols = "55" placeholder="Thêm mô tả cho task..." class="task-desc-input" id="rejected-desc-manage-input" disabled></textarea>
+                                </div>
+                            </div>
+        
+                            <!-- Task attachments -->
+                            <div class="task-detail-section task-manage-line">
+                                <i class="far fa-file-alt"></i>
+                                <h3>File đính kèm</h3>
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        <a href="#" download id="rejected-task-detail-file"></a>                                            
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mô tả được submit cho trưởng phòng -->
+                            <div class="task-detail-section">
+                                <i class="fas fa-tasks"></i>
+                                <h3>Mô tả báo cáo của nhân viên</h3>
+                                <div class="task-detail-input">
+                                    <textarea rows = "3" cols = "55" placeholder="Thêm mô tả cho task..." class="task-desc-input" id="rejected-submit-task-input" disabled></textarea>
+                                </div>
+                            </div>
+
+                            <!-- File được submit cho trưởng phòng -->
+                            <div class="task-detail-section">
+                                <i class="far fa-file-alt"></i>
+                                <h3>File nộp của nhân viên</h3>
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        <a href="#" download id="rejected-submit-task-file"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Task detail modal - COMPLETED -->
+<div class="modal fade" id="completed-task-modal">
+    <div class="modal-dialog task-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="exampleModalLabel">Task's name</h5>
+                    <div>
+                        <label class="task-detail-phongban">Phòng ban: Marketing</label>
+                    </div>
+                    <div>
+                        <div class="status-dot status-dot-completed"></div>
+                        <div class="status-content status-content-completed">Completed</div>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="new-task-detail-form">
+                <div class="modal-body">
+                    <div class="row task-detail-container">
+                        <!-- Task sidebar -->
+                        <div class="task-right">
+                            <div class="task-detail-sidebar col-xs-12 mt-3">
+                                <div class="task-detail-estimate">
+                                    <div class="mb-3">
+                                        <i class="fas fa-calendar"></i>
+                                        <h3>Thời gian nộp</h3>
+                                        <div class="completed-time-submit-manage"></div>
+                                    </div>
+                                    <div>
+                                        <i class="far fa-clock"></i>
+                                        <h3>Hạn nộp</h3>
+                                    </div>
+                                    <div class="task-detail-date">14/12/2021</div>
+                                    <div class="task-detail-time">15:00</div>
+                                </div>
+                            </div>
+    
+                            <div class="task-detail-sidebar col-xs-12 mt-3">
+                                <div class="task-detail-history">
+                                    <div>
+                                        <i class="fas fa-history"></i>
+                                        <h3>Lịch sử công việc</h3>
+                                    </div>
+                                    <div class="history-task-bar">
+                                        <div class="history-section">
+                                            <h3>13:00, 15/12/2021</h3>
+                                            <div class="history-desc">Message</div>
+                                        </div>
+                                        <div class="history-section">
+                                            <h3>12:00, 14/12/2021</h3>
+                                            <div class="history-desc">Message</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Task detail container -->
+                        <div class="task-detail-content col-xs-12">
+                            <!-- Nguoi thuc hien task -->
+                            <div class="">
+                                <div class="task-detail-section">
+                                    <i class="far fa-user"></i>
+                                    <h3>Người thực hiện: </h3>
+                                    <div class="task-member d-inline font-weight-bold">
+                                        Nguyễn Văn A
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <!-- Task description -->
+                            <div class="task-detail-section">
+                                <i class="fas fa-tasks"></i>
+                                <h3>Mô tả công việc</h3>
+                                <div class="task-detail-input">
+                                    <textarea rows = "5" cols = "55" placeholder="Thêm mô tả cho task..." class="task-desc-input" id="completed-desc-manage-input" disabled></textarea>
+                                </div>
+                            </div>
+        
+                            <!-- Task attachments -->
+                            <div class="task-detail-section task-manage-line">
+                                <i class="far fa-file-alt"></i>
+                                <h3>File đính kèm</h3>
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        <a href="#" download id="completed-task-detail-file"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mô tả được submit cho trưởng phòng -->
+                            <div class="task-detail-section">
+                                <i class="fas fa-tasks"></i>
+                                <h3>Mô tả báo cáo của nhân viên</h3>
+                                <div class="task-detail-input">
+                                    <textarea rows = "3" cols = "55" placeholder="Thêm mô tả cho task..." class="task-desc-input" id="completed-submit-task-input" disabled></textarea>
+                                </div>
+                            </div>
+
+                            <!-- File được submit cho trưởng phòng -->
+                            <div class="task-detail-section task-manage-line">
+                                <i class="far fa-file-alt"></i>
+                                <h3>File nộp của nhân viên</h3>
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        <a href="#" download id="completed-submit-task-file"></a>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <!-- Đánh giá của trưởng phòng -->
+                            <div class="task-detail-section">
+                                <i class="fas fa-star"></i>
+                                <h3>Đánh giá</h3>
+                                <div id="completed-ranking"></div>
+                            </div>                      
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- History task modal -->
+<div id="task-history-overlay">
+    <div id="task-history-modal" class="task-detail-modal">
+        <div class="task-detail-wrapper mt-4">
+            <!-- Close button -->
+            <div class="history-task-close">
+                <i class="fas fa-times"></i>
+            </div>
+
+            <!-- History task detail -->
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 history-task-container">
+                        <!-- History task wrapper -->
+                        <div class="create-task-header">
+                            <h4 class="task-detail-title">Lịch sử task</h4>
+                        </div>
+                        <div class="row history-task-wrapper">
+                            <div class="col-12">
+                                <div class="task-detail-section">
+                                    <h3>Mô tả báo cáo của nhân viên</h3>
+                                    <div>
+                                        <textarea rows = "3" placeholder="Mô tả task" class="task-feedback-input" id="history-desc-text" disabled></textarea>
+                                    </div>
+                                </div>
+                                <div class="task-detail-section">
+                                    <h3>File nộp của nhân viên</h3>
+                                    <div class="input-group history-file">
+                                        <div class="custom-file">
+                                            <a href="#" download id="asignee-submit-task-file"></a>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-detail-section reject-part-section">
+                                    <h3>Feedback của trưởng phòng</h3>
+                                    <div>
+                                        <textarea rows = "2" placeholder="Feedback..." class="task-feedback-input" id="history-feedback-text" disabled></textarea>
+                                    </div>
+                                </div>
+                                <div class="task-detail-section reject-part-section">
+                                    <h3>File đính kèm</h3>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <a href="#" download id="history-submit-task-file"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <footer class="task-detail-footer">
+                        <button class="btn btn-outline-secondary close-history-btn" type="submit">Đóng</button>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Submit task modal -->
+<div class="modal fade" id="submit-task-main-modal">
+    <div class="modal-dialog task-detail-modal" id="submit-task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title">Nộp báo cáo</h5>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="submit-task-main-form">
+                <div class="modal-body">
+                    <div class="row submit-task-container">
+                        <!-- Submit task wrapper -->
+                        <div class="col-12">
+                            <div class="task-detail-section">
+                                <h3>Mô tả báo cáo được nộp</h3>
+                                <div>
+                                    <textarea rows = "5" placeholder="Mô tả task" class="task-feedback-input" id="task-submit-desc"></textarea>
+                                </div>
+                            </div>
+                            <div class="task-detail-section">
+                                <h3>File đính kèm</h3>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" name="task_submit_file" id="task_submit_file">
+                                        <label class="custom-file-label" for="task_submit_file">Choose file</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <div class="alert alert-danger col-12" id="message_submit_task"></div>
+                    <button type="submit" class="btn btn-success">Nộp</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

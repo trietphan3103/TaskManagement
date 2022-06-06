@@ -1,0 +1,145 @@
+<%- include('../partials/header.ejs') %>
+<div class="modal fade" id="userResetModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel"><b>Thay đổi mật khẩu</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger" id="message_update_user_danger"></div>
+                <div class="form-group col-md-12 px-4">
+                    <input type="password" class="form-control" id="curr_password" placeholder="Mật khẩu hiện tại">
+                </div>
+                <div class="form-group col-md-12 px-4">
+                    <input type="password" class="form-control" id="new_password" placeholder="Mật khẩu mới">
+                </div>
+                <div class="form-group col-md-12 px-4">
+                    <input type="password" class="form-control" id="confirm_new_password" placeholder="Xác nhận mật khẩu mới">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary user-edit-btn" id="btn-update-user-pass">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="body-layout">
+    <div class="container">
+        <div class="row rounded bg-white mt-5 user-detail user-profile">
+            <div class="col-md-4 border-right">
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                    <form class="profile-avatar" id="profile-avatar">
+                        <label class="-label" for="profile-avatar-file">
+                            <i class="fas fa-camera"></i>
+                            <span>Change Avatar</span>
+                        </label>
+                        <input id="profile-avatar-file" type="file" name="profile-avatar-file" accept="image/*" />
+                        <img src="<%= userDetailInfo['anh_dai_dien'] ? 
+                                    userDetailInfo['anh_dai_dien'] : 
+                                    '/images/user_avt/default_avt.jpg' %>" 
+                                    id="profile-avatar-img" width="200" />
+                    </form>
+                    <span class="font-weight-bold mt-3"><%= userDetailInfo['ho_ten'] %></span>
+                    <span><%= userDetailInfo['ten_phong'] %></span>
+                    <span class="text-primary font-weight-bold"><%= userDetailInfo['status'] == 0 ? "Nhân viên" : "Trưởng phòng" %></span>
+                </div>
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                    <div class="progress mx-auto" data-value="<%= (userDetailInfo['so_absence_max'] - dayUsed) / userDetailInfo['so_absence_max'] * 100; %>">
+                        <span class="progress-left">
+                                        <span class="progress-bar border-primary"></span>
+                        </span>
+                        <span class="progress-right">
+                                        <span class="progress-bar border-primary"></span>
+                        </span>
+                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                            <div class="total-day"><%= (userDetailInfo['so_absence_max'] - dayUsed) %><sup class="small"><i></i></sup></div>
+                        </div>
+                    </div>
+                    <div class="document-block">
+                        <div class="date-bank">
+                            <span></span>
+                            <span>Số ngày nghỉ cho phép: <span class="text-value"><%= (userDetailInfo['so_absence_max']) %> ngày</span></span>
+                        </div>
+                        <div class="date-used">
+                            <span></span>
+                            <span>Số ngày nghỉ đã dùng: <span class="text-value"><%= dayUsed %> ngày</span></span>
+                        </div>
+                        <div class="date-remaining">
+                            <span></span>
+                            <span>Số ngày nghỉ còn lại: <span class="text-value"><%= (userDetailInfo['so_absence_max'] - dayUsed) %> ngày</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="p-3 py-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex flex-row align-items-center">
+                            <div href="/view/User/UserDetail.php" class="p-2" id="prev-link">
+                                <i class="fas fa-caret-left mr-2"></i>
+                                <h6>Quay về</h6>
+                            </div>
+                        </div>
+                        <h6 class="text-right primary-text user-edit-btn" id="reset-mode-btn" data-toggle="modal" data-target="#userResetModal">Đặt lại mật khẩu &nbsp; <i class="fas fa-key"></i></h6>
+                    </div>
+                    <form class="user-detail-form">
+                        <div class="alert alert-info" id="message_update_user_infor"> </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 px-4">
+                                <label for="user-name-info">Tên nhân viên</label>
+                                <div class="user-info" id="user-name-info"></div>
+                                <input type="text" class="form-control" id="ho_ten" value="<%= userDetailInfo['ho_ten'] %>" default="<%= userDetailInfo['ho_ten'] %>" name="ho_ten" readonly>
+                            </div>
+                            <div class="form-group col-md-6 px-4">
+                                <label for="user-username-info">Username</label>
+                                <input type="text" class="form-control" id="user_name" value="<%= userDetailInfo['user_name'] %>" default="<%= userDetailInfo['user_name'] %>" name="user_name" readonly>
+                            </div>
+                            <div class="form-group col-md-6 px-4">
+                                <label for="user-department-info">Phòng ban</label>
+                                <select class="custom-select" id="phong_ban_id" default="<%= userDetailInfo['phong_ban_id'] %>" name="phong_ban_id" disabled>
+                                    <% if (departments.length > 0) { %>
+                                        <% for (var i = 0; i < departments.length; i++) {%>
+                                            <option value ='<%= departments[i].phong_ban_id %>' <% if (departments[i].phong_ban_id == userDetailInfo.phong_ban_id) { %> selected <% } %>><%= departments[i].ten_phong %></option>
+                                    <% }} else { %>
+                                        
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6 px-4">
+                                <label for="user-status">Ngày sinh</label>
+                                <input type="date" class="form-control" id="ngay_sinh" name="ngay_sinh" default="<%= moment(userDetailInfo['ngay_sinh']).format('YYYY-MM-DD') %>" value="<%= moment(userDetailInfo['ngay_sinh']).format('YYYY-MM-DD') %>" readonly>
+                            </div>
+                            <div class="form-group col-md-6 px-4">
+                                <label for="user-birthday-info">Chức vụ</label>
+                                <select class="custom-select" id="status" default="<%= userDetailInfo['status']%>" name="status" disabled>
+                                    <option value="0" <% if (userDetailInfo['status'] == 0) { %> selected <% } %> >Nhân viên</option>
+                                    <option value="1" <% if (userDetailInfo['status'] == 1) { %> selected <% } %> >Trưởng phòng</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6 px-4">
+                                <label for="user-gender-info">Giới tính</label>
+                                <select class="custom-select" id="gioi_tinh" default="<%= userDetailInfo['gioi_tinh']%>" name="gioi_tinh" disabled>
+                                    <option value="Male" <% if (userDetailInfo['gioi_tinh'] == 'Male') { %> selected <% } %>>Nam</option>
+                                    <option value="Female" <% if (userDetailInfo['gioi_tinh'] == 'Female') { %> selected <% } %>>Nữ</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6 px-4">
+                                <label for="user-number-info">Số điện thoại</label>
+                                <input type="text" class="form-control" id="sdt" name="sdt" default="<%= userDetailInfo['sdt']%>" value="<%= userDetailInfo['sdt']%>" readonly>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-mode btn-primary float-right">Cập nhật</button>
+                        <button class="btn btn-mode btn-cancel float-right" id="btn-cancel">Hủy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
